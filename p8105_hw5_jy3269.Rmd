@@ -58,13 +58,38 @@ homicide %>%
 ```
 
 
+### 4. Focus on Baltimore, MD
 ```{r}
-
+baltimore <- homicide %>% 
+  filter(city_state == "Baltimore, MD") %>% 
+  mutate(
+    unresolved_homicides = ifelse(disposition == "Open/No arrest" | disposition == "Closed without arrest", 1,0)) 
 
 ```
 
 
 ```{r}
+result_baltimore <- prop.test(sum(baltimore$unresolved_homicides),length(baltimore$unresolved_homicides)) %>% 
+  broom::tidy()
+
+prop_estimate_baltimore <- result_baltimore %>% 
+  pull(estimate)
+
+lower_bound_baltimore <- result_baltimore %>% 
+  pull(conf.low)
+
+upper_bound_baltimore <- result_baltimore %>% 
+  pull(conf.high)
+
+baltimore_estimate <- list(
+  "proportion_estimate" = prop_estimate_baltimore,
+  "lower_CI_estimate" = lower_bound_baltimore,
+  "upper_CI_estimate" = upper_bound_baltimore
+) %>% 
+  bind_rows()
+
+baltimore_estimate
+
 
 
 ```
