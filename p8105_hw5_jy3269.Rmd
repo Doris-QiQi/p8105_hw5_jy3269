@@ -59,6 +59,7 @@ homicide %>%
 
 
 ### 4. Focus on Baltimore, MD
+
 ```{r}
 baltimore <- homicide %>% 
   filter(city_state == "Baltimore, MD") %>% 
@@ -67,11 +68,15 @@ baltimore <- homicide %>%
 
 ```
 
-
+#### 5. Conduct proportion test and saved the results
 ```{r}
 result_baltimore <- prop.test(sum(baltimore$unresolved_homicides),length(baltimore$unresolved_homicides)) %>% 
   broom::tidy()
 
+save(result_baltimore, file = "./results/results_baltimore.RData")
+```
+
+```{r}
 prop_estimate_baltimore <- result_baltimore %>% 
   pull(estimate)
 
