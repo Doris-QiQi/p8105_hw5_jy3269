@@ -15,7 +15,7 @@ set.seed(1)
 
 # Problem 2
 
-### 1. Describe the Raw Data
+### 1. Describe the raw data
 ```{r}
 raw_data <- read_csv("./data/homicide-data.csv",show_col_types = FALSE)
 
@@ -34,7 +34,8 @@ raw_data %>%
 
 ```
 
-### 2. Create a `city_state` Variable
+
+### 2. Create a `city_state` variable
 ```{r}
 homicide <- raw_data %>% 
   mutate(city_state = str_c(city,", ",state),
@@ -45,7 +46,7 @@ head(homicide)
 
 ```
 
-### 3. Summarize Within Cities
+### 3. Summarize within cities
 ```{r}
 homicide %>% 
   group_by(city_state) %>% 
@@ -68,14 +69,16 @@ baltimore <- homicide %>%
 
 ```
 
-#### 5. Conduct proportion test and saved the results
+#### 5. Conduct proportion test and save the results
 ```{r}
 result_baltimore <- prop.test(sum(baltimore$unresolved_homicides),length(baltimore$unresolved_homicides)) %>% 
   broom::tidy()
 
-save(result_baltimore, file = "./results/results_baltimore.RData")
+save(result_baltimore, file = "result/results_baltimore.RData")
 ```
 
+
+#### 6. Pull the estimated proportion and confidence intervals
 ```{r}
 prop_estimate_baltimore <- result_baltimore %>% 
   pull(estimate)
@@ -94,8 +97,6 @@ baltimore_estimate <- list(
   bind_rows()
 
 baltimore_estimate
-
-
 
 ```
 
