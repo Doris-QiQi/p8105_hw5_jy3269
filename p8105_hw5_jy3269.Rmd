@@ -38,8 +38,7 @@ raw_data %>%
 ### 2. Create a `city_state` variable
 ```{r}
 homicide <- raw_data %>% 
-  mutate(city_state = str_c(city,", ",state),
-         city_state = fct_inorder(city_state)) %>% 
+  mutate(city_state = str_c(city,", ",state)) %>% 
   select(uid,city_state,everything())
 
 head(homicide)
@@ -64,14 +63,14 @@ homicide %>%
 baltimore <- homicide %>% 
   filter(city_state == "Baltimore, MD") %>% 
   mutate(
-    unresolved_homicides = ifelse(disposition == "Open/No arrest" | disposition == "Closed without arrest", 1,0)) 
+    unsolved_homicides = ifelse(disposition == "Open/No arrest" | disposition == "Closed without arrest", 1,0)) 
 
 ```
 
 
 #### 5. Conduct proportion test and save the results
 ```{r}
-result_baltimore <- prop.test(sum(baltimore$unresolved_homicides),length(baltimore$unresolved_homicides)) %>% 
+result_baltimore <- prop.test(sum(baltimore$unsolved_homicides),length(baltimore$unsolved_homicides)) %>% 
   broom::tidy()
 
 result_baltimore
@@ -106,7 +105,7 @@ baltimore_estimate
 
 ```{r}
 # not using pull(), using select()
-result_baltimore <- prop.test(sum(baltimore$unresolved_homicides),length(baltimore$unresolved_homicides)) %>% 
+result_baltimore <- prop.test(sum(baltimore$unsolved_homicides),length(baltimore$unsolved_homicides)) %>% 
   broom::tidy() %>% 
   select(estimate,conf.low,conf.high)
 
@@ -118,36 +117,40 @@ result_baltimore
 #### 7. define a function
 ```{r}
 unsolved <- function(citystate){
-  homicide %>% 
-    filter(city_state == "citystate") %>% 
-    prop.test(x = sum(dataset$disposition == 'Closed without arrest' | dataset$disposition == 'Open/No arrest'), n = length(dataset$disposition)) %>% 
+  by_city <- homicide %>% 
+    filter(city_state == citystate) %>% 
+    mutate(unsolved_homicides = ifelse(disposition == "Open/No arrest" | disposition == "Closed without arrest", 1,0)) 
+  
+    result <- prop.test(sum(by_city$unsolved_homicides),length(by_city$unsolved_homicides)) %>% 
     broom::tidy() %>% 
     select(estimate, conf.low, conf.high)
+    
+    result
 }
+
+unsolved("Memphis, TN")
   
 ```
 
 
 #### 8. iterate the function among each city
 ```{r}
-name = unique(homicide$city_state)
+cityname = unique(homicide$city_state) 
 
-unsolved_result = 
-  expand_grid(
-    citystate = name
-  ) %>% 
-  mutate(prop_test_result = map(name, unsolved)) %>% 
+result <- expand_grid(city_state = cityname) %>% 
+  mutate(prop_test_result = map(cityname, unsolved)) %>% 
   unnest(prop_test_result) %>% 
   arrange(desc(estimate))
 
-unsolved_result
-
-
+result
 ```
 
 
 ```{r}
-
+ggplot(result, aes(y = fct_reorder(city_state, estimate), x = estimate)) +
+  geom_point()+
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high))+
+  labs(title = "Proportion of unsolved homocide among cities", ) + xlab("City,State")
 
 ```
 
