@@ -6,31 +6,54 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-
+library(tidyverse)
+library(gtsummary)
+set.seed(1)
 ```
 
 
 
+# Problem 2
+
+### 1. Describe the Raw Data
 ```{r}
+raw_data <- read_csv("./data/homicide-data.csv",show_col_types = FALSE)
 
-
-```
-
-
-```{r}
-
-
-```
-
-
-```{r}
-
+dim(raw_data)
 
 ```
 
 
 ```{r}
+raw_data %>% 
+  select(-uid) %>% 
+  tbl_summary(missing_text = "(Missing)", # counts missing values
+  statistic = list(all_continuous() ~ "{mean} ({sd})")) %>%  # what to do with cont
+  bold_labels() %>%
+  italicize_levels()
 
+```
+
+### 2. Create a `city_state` Variable
+```{r}
+homicide <- raw_data %>% 
+  mutate(city_state = str_c(city,", ",state),
+         city_state = fct_inorder(city_state)) %>% 
+  select(uid,city_state,everything())
+
+head(homicide)
+
+```
+
+### 3. Summarize Within Cities
+```{r}
+homicide %>% 
+  group_by(city_state) %>% 
+  summarize(
+    total_homicides = n(),
+    unsolved_homicides = sum(disposition == "Open/No arrest") + sum(disposition == "Closed without arrest")) %>% 
+  arrange(desc(total_homicides)) %>% 
+  knitr::kable()
 
 ```
 
