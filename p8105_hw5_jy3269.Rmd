@@ -117,18 +117,20 @@ result_baltimore
 #### 7. define a function
 ```{r}
 unsolved <- function(citystate){
+  # filter a city
   by_city <- homicide %>% 
     filter(city_state == citystate) %>% 
     mutate(unsolved_homicides = ifelse(disposition == "Open/No arrest" | disposition == "Closed without arrest", 1,0)) 
   
+  # conduct prop test for the filtered city
     result <- prop.test(sum(by_city$unsolved_homicides),length(by_city$unsolved_homicides)) %>% 
     broom::tidy() %>% 
     select(estimate, conf.low, conf.high)
     
+  # output
     result
 }
 
-unsolved("Memphis, TN")
   
 ```
 
@@ -142,15 +144,17 @@ result <- expand_grid(city_state = cityname) %>%
   unnest(prop_test_result) %>% 
   arrange(desc(estimate))
 
-result
+result %>% knitr::kable(,digits=3)
 ```
 
-
+#### 9. plot the result
 ```{r}
-ggplot(result, aes(y = fct_reorder(city_state, estimate), x = estimate)) +
-  geom_point()+
-  geom_errorbar(aes(ymin = conf.low, ymax = conf.high))+
-  labs(title = "Proportion of unsolved homocide among cities", ) + xlab("City,State")
+result %>%
+  ggplot(aes(group = city_state, y = reorder(city_state, estimate))) + 
+  geom_point(aes(x = estimate)) +
+  geom_errorbar(aes(xmin = conf.low, xmax = conf.high)) +
+  theme(axis.text.y = element_text(hjust = 0.5,size = 6)) +
+  labs(y = "City,State", x = "Estimated Proportion and 95% CI",title="Unsolved Homicides")
 
 ```
 
