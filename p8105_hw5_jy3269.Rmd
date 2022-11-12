@@ -60,7 +60,6 @@ homicide %>%
 
 
 ### 4. Focus on Baltimore, MD
-
 ```{r}
 baltimore <- homicide %>% 
   filter(city_state == "Baltimore, MD") %>% 
@@ -69,10 +68,13 @@ baltimore <- homicide %>%
 
 ```
 
+
 #### 5. Conduct proportion test and save the results
 ```{r}
 result_baltimore <- prop.test(sum(baltimore$unresolved_homicides),length(baltimore$unresolved_homicides)) %>% 
   broom::tidy()
+
+result_baltimore
 
 save(result_baltimore, file = "result/results_baltimore.RData")
 ```
@@ -80,6 +82,7 @@ save(result_baltimore, file = "result/results_baltimore.RData")
 
 #### 6. Pull the estimated proportion and confidence intervals
 ```{r}
+# using pull()
 prop_estimate_baltimore <- result_baltimore %>% 
   pull(estimate)
 
@@ -102,12 +105,42 @@ baltimore_estimate
 
 
 ```{r}
+# not using pull(), using select()
+result_baltimore <- prop.test(sum(baltimore$unresolved_homicides),length(baltimore$unresolved_homicides)) %>% 
+  broom::tidy() %>% 
+  select(estimate,conf.low,conf.high)
 
+result_baltimore
 
 ```
 
 
+#### 7. define a function
 ```{r}
+unsolved <- function(citystate){
+  homicide %>% 
+    filter(city_state == "citystate") %>% 
+    prop.test(x = sum(dataset$disposition == 'Closed without arrest' | dataset$disposition == 'Open/No arrest'), n = length(dataset$disposition)) %>% 
+    broom::tidy() %>% 
+    select(estimate, conf.low, conf.high)
+}
+  
+```
+
+
+#### 8. iterate the function among each city
+```{r}
+name = unique(homicide$city_state)
+
+unsolved_result = 
+  expand_grid(
+    citystate = name
+  ) %>% 
+  mutate(prop_test_result = map(name, unsolved)) %>% 
+  unnest(prop_test_result) %>% 
+  arrange(desc(estimate))
+
+unsolved_result
 
 
 ```
