@@ -150,14 +150,19 @@ result %>%
 ```
 
 
+## Problem 3
+
+### 1. set the design elements
 ```{r}
-
-
+n = 30
+sig = 5
+mu = 0
 ```
 
 
+### 2. generate 5000 samples 
 ```{r}
-
+samples <- rerun(5000,rnorm(n,mean = mu,sd = sig))
 
 ```
 
