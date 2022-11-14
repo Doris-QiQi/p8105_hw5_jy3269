@@ -207,10 +207,10 @@ mean_multi %>%
 ```
 
 ### 6. plot of estimated means
-```{r}
+```{r,warning=FALSE}
 mean_multi %>%
   group_by(mean) %>% 
-  summarize(average_estimate = mean(estimate)) %>% 
+  summarize(average_estimate = mean(estimate,na.rm = T)) %>% 
   ggplot(aes(x = mean,y = average_estimate)) +
   scale_x_continuous(limits = c(1,6), breaks = seq(1,6,1)) + 
   geom_point() + geom_path() +
@@ -222,18 +222,24 @@ mean_multi %>%
 ```{r}
 rejected_estimate <- mean_multi %>% 
   filter(p.value < 0.05) %>% group_by(mean) %>% 
-  summarize(average_estimate = mean(estimate)) %>% 
+  summarize(average_estimate = mean(estimate,na.rm = T)) %>% 
   ungroup()
 
-mean_multi %>%
+full_estimate <- mean_multi %>% 
   group_by(mean) %>% 
-  summarize(average_estimate = mean(estimate)) %>% 
-  ggplot(aes(x = mean,y = average_estimate)) +
-  scale_x_continuous(limits = c(1,6), breaks = seq(1,6,1)) + 
-  geom_point() + geom_path() +
-  geom_point(data = rejected_estimate,color = "blue")+geom_path(data = rejected_estimate,color = "blue")
+  summarize(average_estimate = mean(estimate,na.rm = T)) %>% 
+  ungroup()
   
-  labs(x = "True Mean",y = "Average Estimate Mean",title = "Estimated Means")
+ggplot(full_estimate,aes(x = mean, y = average_estimate)) +
+  geom_line(data = full_estimate,aes(colour = "blue")) +
+  geom_line(data = rejected_estimate,aes(colour = "red")) +
+  scale_color_manual(name = " ", values = c("blue" = "blue", "red" = "red"),
+                     labels = c('All Estimates','Rejected Estimates'))+
+  geom_point(data = full_estimate,colour = "blue") +
+  geom_point(data = rejected_estimate,colour = "red") +
+  scale_x_continuous(limits = c(1,6), breaks = seq(1,6,1)) +
+  labs(x = "True Mean",y = "Average Estimate Mean",title = "All vs. Rejected Estimates")
+  
   
 
 ```
