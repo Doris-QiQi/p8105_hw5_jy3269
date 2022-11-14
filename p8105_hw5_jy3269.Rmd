@@ -218,7 +218,7 @@ mean_multi %>%
 
 ```
 
-
+### 7. plot all the estimates vs. the rejected estimates
 ```{r}
 rejected_estimate <- mean_multi %>% 
   filter(p.value < 0.05) %>% group_by(mean) %>% 
@@ -245,25 +245,3 @@ ggplot(full_estimate,aes(x = mean, y = average_estimate)) +
 ```
 
 
-```{r}
-
-
-```
-
-
-```{r}
-
-
-```
-
-
-```{r}
-
-
-```
-
-
-```{r}
-
-
-```
