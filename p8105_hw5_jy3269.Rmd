@@ -220,7 +220,21 @@ mean_multi %>%
 
 
 ```{r}
+rejected_estimate <- mean_multi %>% 
+  filter(p.value < 0.05) %>% group_by(mean) %>% 
+  summarize(average_estimate = mean(estimate)) %>% 
+  ungroup()
 
+mean_multi %>%
+  group_by(mean) %>% 
+  summarize(average_estimate = mean(estimate)) %>% 
+  ggplot(aes(x = mean,y = average_estimate)) +
+  scale_x_continuous(limits = c(1,6), breaks = seq(1,6,1)) + 
+  geom_point() + geom_path() +
+  geom_point(data = rejected_estimate,color = "blue")+geom_path(data = rejected_estimate,color = "blue")
+  
+  labs(x = "True Mean",y = "Average Estimate Mean",title = "Estimated Means")
+  
 
 ```
 
