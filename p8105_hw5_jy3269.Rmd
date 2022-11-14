@@ -194,7 +194,7 @@ head(mean_multi)
 
 ```
 
-
+### 5. plot of power
 ```{r}
 mean_multi %>%
   group_by(mean) %>% 
@@ -206,9 +206,15 @@ mean_multi %>%
 
 ```
 
-
+### 6. plot of estimated means
 ```{r}
-
+mean_multi %>%
+  group_by(mean) %>% 
+  summarize(average_estimate = mean(estimate)) %>% 
+  ggplot(aes(x = mean,y = average_estimate)) +
+  scale_x_continuous(limits = c(1,6), breaks = seq(1,6,1)) + 
+  geom_point() + geom_path() +
+  labs(x = "True Mean",y = "Average Estimate Mean",title = "Estimated Means")
 
 ```
 
