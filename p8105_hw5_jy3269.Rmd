@@ -152,41 +152,57 @@ result %>%
 
 ## Problem 3
 
-### 1. set the design elements
+### 1. set the design element and generate 5000 samples 
 ```{r}
-n = 30
-sig = 5
-mu = 0
-```
-
-
-### 2. generate 5000 samples 
-```{r}
-samples <- rerun(5000,rnorm(n,mean = mu,sd = sig))
+samples <- rerun(5000,rnorm(n = 30,mean = 0,sd = 5))
 
 ```
 
-
+### 2. define a function to t.test 1 sample and save the estimate and p-value
 ```{r}
+t_test <- function(mu = 0) {
+  sample <- tibble(rnorm(n = 30, mean = mu, sd = 5))
+  
+  result <- t.test(sample) %>% 
+    broom::tidy() %>% 
+    select(estimate,p.value)
+  
+  result
+}
 
+t_test()
+  
+```
+
+### 3. use the defined function to t.test 5000 samples with the same mean = 0
+```{r}
+mean_0 <- expand_grid(mean = 0, iteration = 1:5000) %>% 
+  mutate(result = map(mean,t_test)) %>% 
+  unnest(result)
+
+head(mean_0)
+
+```
+
+### 4. t.test samples with different means
+```{r}
+mean_multi <- expand_grid(mean = 1:6, iteration = 1:5000) %>% 
+  mutate(result = map(mean,t_test)) %>% 
+  unnest(result)
+
+head(mean_multi)
 
 ```
 
 
 ```{r}
-
-
-```
-
-
-```{r}
-
-
-```
-
-
-```{r}
-
+mean_multi %>%
+  group_by(mean) %>% 
+  summarize(proportion_rejected = sum(p.value < 0.05)/5000) %>% 
+  ggplot(aes(x = mean,y = proportion_rejected)) +
+  scale_x_continuous(limits = c(1,6), breaks = seq(1,6,1)) + 
+  geom_point() + geom_path() +
+  labs(x = "True Mean",y = "Power ( proportion of rejected tests )",title = "Power of t.test with different means")
 
 ```
 
