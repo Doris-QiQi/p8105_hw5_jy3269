@@ -198,12 +198,14 @@ We can tel from the plot that Chicago's unsolved homicides proportion estimate i
 
 ## Problem 3
 
+\ \par
 ### 1. set the design element and generate 5000 samples 
 ```{r}
 samples <- rerun(5000,rnorm(n = 30,mean = 0,sd = 5))
 
 ```
 
+\ \par
 ### 2. define a function to t.test 1 sample and save the estimate and p-value
 ```{r}
 t_test <- function(mu = 0) {
@@ -215,17 +217,17 @@ t_test <- function(mu = 0) {
   
   result
 }
-
-t_test()
   
 ```
 
+\ \par
 ### 3. use the defined function to t.test 5000 samples with the same mean = 0
 ```{r}
 mean_0 <- expand_grid(mean = 0, iteration = 1:5000) %>% 
   mutate(result = map(mean,t_test)) %>% 
   unnest(result)
 
+dim(mean_0)
 head(mean_0)
 
 ```
@@ -236,6 +238,7 @@ mean_multi <- expand_grid(mean = 1:6, iteration = 1:5000) %>%
   mutate(result = map(mean,t_test)) %>% 
   unnest(result)
 
+dim(mean_multi)
 head(mean_multi)
 
 ```
@@ -248,10 +251,21 @@ mean_multi %>%
   ggplot(aes(x = mean,y = proportion_rejected)) +
   scale_x_continuous(limits = c(1,6), breaks = seq(1,6,1)) + 
   geom_point() + geom_path() +
-  labs(x = "True Mean",y = "Power ( proportion of rejected tests )",title = "Power of t.test with different means")
+  labs(x = "True Mean",y = "Power ( proportion of rejection )",title = "Power of t.test vs. Different Means")
 
 ```
+ \ \par
+ 
+ From the plot we know that :
+ 
+ 1. As the true mean increases, the proportion of rejection increases. 
+ 
+ 2. In other words, the power increases as the effect size increases.
+ 
+ 3. The increasing rate (slope) of power decreases as the effect size increases.
 
+
+\ \par
 ### 6. plot of estimated means
 ```{r,warning=FALSE}
 mean_multi %>%
@@ -289,5 +303,18 @@ ggplot(full_estimate,aes(x = mean, y = average_estimate)) +
   
 
 ```
+
+\ \par
+
+From the plots above, we know :
+
+1. When the effect size is small(less than 4), the sample average of mu hat when the null is rejected is very different from the true value of mu. It is always larger than the true value of mu(overall sample average of mu hat). 
+
+2. When the effect size gets larger(larger or equal to 4), the sample average of mu hat when the null is rejected is approximately equal to the true value of mu. That’s because as the power is increasing.
+
+So given the small sample size and low power, and given that the null is rejected, we can see the average is very different from the true mean. It indicates the publication bias. We should be careful of this situation. When the power is low, the sample size is small, the results that the null is rejected may be far away from the truth.
+
+
+
 
 
