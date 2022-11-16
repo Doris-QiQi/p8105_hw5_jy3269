@@ -21,9 +21,20 @@ raw_data <- read_csv("./data/homicide-data.csv",show_col_types = FALSE)
 
 dim(raw_data)
 
+colnames(raw_data)
+
 ```
 
+\ \par
 
+1. The raw data set contains `r nrow(raw_data)` rows of observations (homicide) and `r ncol(raw_data)` columns of variables (homicide features).
+
+2. The variables are `r colnames(raw_data)`
+
+3. This data set mainly documents the homicides in 50 large U.S. cities. Each row is a documented homicide, including the victim's information, the place where the homicide took place and the result.
+
+
+\ \par
 ### 2. Create a `city_state` variable
 ```{r}
 homicide <- raw_data %>% 
@@ -35,6 +46,7 @@ homicide %>%
   knitr::kable()
 
 ```
+
 
 ### 3. Summarize within cities
 ```{r}
