@@ -69,27 +69,35 @@ From the table we know that :
 2. Tulsa in Alabama has only 1 case of homicide and 0 unsolved homicide.
 
 
+\ \par
 ### 4. Focus on Baltimore, MD
 ```{r}
 baltimore <- homicide %>% 
   filter(city_state == "Baltimore, MD") %>% 
   mutate(
-    unsolved_homicides = ifelse(disposition == "Open/No arrest" | disposition == "Closed without arrest", 1,0)) 
+    unsolved_homicides = ifelse(disposition == "Open/No arrest" | disposition == "Closed without arrest", 1,0))  # create a binary column showing the status
 
 ```
 
 
+
+\ \par
 ### 5. Conduct proportion test and save the results
 ```{r}
 result_baltimore <- prop.test(sum(baltimore$unsolved_homicides),length(baltimore$unsolved_homicides)) %>% 
-  broom::tidy()
+  broom::tidy()   # tidy the result
 
 result_baltimore
 
+# the result is save in the result folder in the R project
 save(result_baltimore, file = "result/results_baltimore.RData")
 ```
+\ \par
+
+The `prop.test` on Baltimore estimates that 64.56% of the homicides are unsolved, and the 95% confidence interval for the proportion estimate is ( 0.6275625, 0.6631599	) 
 
 
+\ \par
 ### 6. Pull the estimated proportion and confidence intervals
 ```{r}
 # using pull()
