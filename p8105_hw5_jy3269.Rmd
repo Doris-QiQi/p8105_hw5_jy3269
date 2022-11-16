@@ -39,15 +39,15 @@ colnames(raw_data)
 ```{r}
 homicide <- raw_data %>% 
   mutate(city_state = str_c(city,", ",state)) %>% 
-  select(uid,city_state,everything()) 
+  select(uid,city_state,everything())   # put the newly created variable at the front
 
 homicide %>%
   head() %>% 
-  knitr::kable()
+  knitr::kable()   # show the first 6 rows of the homicide dataset
 
 ```
 
-
+\ \par
 ### 3. Summarize within cities
 ```{r}
 homicide %>% 
@@ -59,6 +59,14 @@ homicide %>%
   knitr::kable()
 
 ```
+
+\ \par
+
+From the table we know that :
+
+1. Chicago has the most total homicides (5535) and the most unsolved homicides(4073).
+
+2. Tulsa in Alabama has only 1 case of homicide and 0 unsolved homicide.
 
 
 ### 4. Focus on Baltimore, MD
