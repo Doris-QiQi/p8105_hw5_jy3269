@@ -55,7 +55,7 @@ homicide %>%
   summarize(
     total_homicides = n(),
     unsolved_homicides = sum(disposition == "Open/No arrest") + sum(disposition == "Closed without arrest")) %>% 
-  arrange(desc(total_homicides)) %>% 
+  arrange(desc(total_homicides)) %>%   # arranged by total_homicides counts
   knitr::kable()
 
 ```
@@ -149,11 +149,17 @@ unsolved <- function(citystate){
   # output
     result
 }
-
   
 ```
 
+\ \par 
 
+We define a function called `unsolved()` to get the `prop.test` result of the each city in the dataset.
+
+The input of the function is the `city_state` name and the output is the proportion point estimate and 95% confidence interval of the estimate.
+
+
+\ \par
 ### 8. iterate the function among each city
 ```{r}
 cityname = unique(homicide$city_state) 
@@ -165,6 +171,7 @@ result <- expand_grid(city_state = cityname) %>%
 
 result %>% knitr::kable(digits = 3)
 ```
+\ \par
 
 ### 9. plot the result
 ```{r}
@@ -177,6 +184,17 @@ result %>%
 
 ```
 
+The x-axis is the estimated proportion of unsolved homicides and its 95% CI.
+
+The y-axis is each city_state in the dataset.
+
+We can tel from the plot that Chicago's unsolved homicides proportion estimate is the the highest and it is significantly higher than the rest.
+
+
+
+
+\ \par
+\ \par
 
 ## Problem 3
 
