@@ -117,7 +117,7 @@ baltimore_estimate <- list(
 ) %>% 
   bind_rows()
 
-baltimore_estimate
+baltimore_estimate %>% knitr::kable()
 
 ```
 
@@ -128,7 +128,7 @@ result_baltimore <- prop.test(sum(baltimore$unsolved_homicides),length(baltimore
   broom::tidy() %>% 
   select(estimate,conf.low,conf.high)
 
-result_baltimore
+result_baltimore %>% knitr::kable()
 
 ```
 
@@ -147,7 +147,7 @@ unsolved <- function(citystate){
     select(estimate, conf.low, conf.high)
     
   # output
-    result
+    result 
 }
   
 ```
